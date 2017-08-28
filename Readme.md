@@ -3,7 +3,7 @@
 A react-native wrapper for handling in-app purchases.
 
 # Reason to fork 
-- Adding the feature of finishing the transaction manually from RN side
+- Added features Finishing the transaction manually from RN side and looping through transactions in queue.
 
 # Breaking Change
 
