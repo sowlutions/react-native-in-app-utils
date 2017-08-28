@@ -2,6 +2,9 @@
 
 A react-native wrapper for handling in-app purchases.
 
+# Reason to fork 
+- Adding the feature of finishing the transaction manually from RN side
+
 # Breaking Change
 
 - Due to a major breaking change in RN 0.40+, Use v5.x of this lib when installing from npm.
@@ -69,9 +72,32 @@ InAppUtils.purchaseProduct(productIdentifier, (error, response) => {
    // NOTE for v3.0: User can cancel the payment which will be available as error object here.
    if(response && response.productIdentifier) {
       Alert.alert('Purchase Successful', 'Your Transaction ID is ' + response.transactionIdentifier);
-      //unlock store here.
+      InAppUtils.finishTransactionFromJS(response.transactionIdentifier , (result) => {
+       if (result && result.success){
+         //alert success
+       } else {
+         //alert failure
+       }
    }
 });
+```
+
+### Loop through transactions 
+
+```javascript
+InAppUtils.loopThroughTransactions((response) => {
+   if (response && response.productIdentifier){
+    InAppUtils.finishTransactionFromJS(response.transactionIdentifier , (result) => {
+      if (result && result.success){
+        //success
+      } else {
+       //error
+      }
+    })
+   } else {
+     //error
+   }
+}); 
 ```
 
 **NOTE:** Call `loadProducts` prior to calling `purchaseProduct`, otherwise this will return `invalid_product`. If you're calling them right after each other, you will need to call `purchaseProduct` inside of the `loadProducts` callback to ensure it has had a chance to complete its call.
