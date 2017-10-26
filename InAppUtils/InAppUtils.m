@@ -149,11 +149,11 @@ RCT_EXPORT_METHOD(loopThroughTransactions:(RCTResponseSenderBlock)callback)
                                                @"productIdentifier": transaction.payment.productIdentifier,
                                                @"transactionReceipt": [[transaction transactionReceipt] base64EncodedStringWithOptions:0]
                                                };
-                    callback(@[[NSNull null], purchase]);
+                    callback(@[purchase]);
                 } else {
                     RCTLogWarn(@"No callback registered for transaction with state purchased.");
                 }
-                //[[SKPaymentQueue defaultQueue] finishTransaction:transaction];
+//                [[SKPaymentQueue defaultQueue] finishTransaction:transaction];
                 break;
             }
             case SKPaymentTransactionStateRestored:
