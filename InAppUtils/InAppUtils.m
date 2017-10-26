@@ -58,7 +58,7 @@ RCT_EXPORT_MODULE()
                 } else {
                     RCTLogWarn(@"No callback registered for transaction with state purchased.");
                 }
-                [[SKPaymentQueue defaultQueue] finishTransaction:transaction];
+//                [[SKPaymentQueue defaultQueue] finishTransaction:transaction];
                 break;
             }
             case SKPaymentTransactionStateRestored:
@@ -97,10 +97,29 @@ RCT_EXPORT_METHOD(purchaseProduct:(NSString *)productIdentifier
     }
 }
 
-RCT_EXPORT_METHOD(finishTransactionFromJS:(SKPaymentTransaction *)transaction
+-(SKPaymentTransaction *) getTransactionByID:(NSString *) transactionID {
+    NSArray *transactions = [SKPaymentQueue defaultQueue].transactions;
+    
+    for (SKPaymentTransaction *transaction in transactions) {
+        if ([transaction.transactionIdentifier isEqualToString:transactionID]){
+            return transaction;
+        }
+    }
+    return nil;
+}
+
+RCT_EXPORT_METHOD(finishTransactionFromJS:(NSString *)transactionID
                   callback:(RCTResponseSenderBlock)callback)
 {
-    [[SKPaymentQueue defaultQueue] finishTransaction:transaction];
+    SKPaymentTransaction *transaction = [self getTransactionByID:transactionID];
+    NSMutableDictionary *result = [[NSMutableDictionary alloc] init];
+    [result setValue:@false forKey:@"success"];
+    
+    if(transaction != nil) {
+        [[SKPaymentQueue defaultQueue] finishTransaction:transaction];
+        [result setValue:@true forKey:@"success"];
+    }
+    callback(@[result]);
 }
 
 RCT_EXPORT_METHOD(loopThroughTransactions:(RCTResponseSenderBlock)callback)
@@ -118,6 +137,7 @@ RCT_EXPORT_METHOD(loopThroughTransactions:(RCTResponseSenderBlock)callback)
                 } else {
                     RCTLogWarn(@"No callback registered for transaction with state failed.");
                 }
+                NSLog(@"failed");
                 [[SKPaymentQueue defaultQueue] finishTransaction:transaction];
                 break;
             }
@@ -138,6 +158,7 @@ RCT_EXPORT_METHOD(loopThroughTransactions:(RCTResponseSenderBlock)callback)
             }
             case SKPaymentTransactionStateRestored:
                 [[SKPaymentQueue defaultQueue] finishTransaction:transaction];
+                NSLog(@"Restored");
                 break;
             case SKPaymentTransactionStatePurchasing:
                 NSLog(@"purchasing");
